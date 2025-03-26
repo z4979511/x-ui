@@ -51,6 +51,18 @@ _en.sh)
 bash <(curl -L https://raw.githubusercontent.com/z4979511/x-ui/main/install.sh -o install.sh && bash install.sh
 ) 0.0.1  
 ```
+正在启用 BBR 加速...
+(standard_in) 1: syntax error
+您的内核版本不支持 BBR（需要 4.9 及以上），BBR 加速无法启用。
+ 表明你的服务器内核版本不支持 BBR 加速。BBR 是 Linux 4.9 及以上版本的功能，如果你的内核版本低于 4.9，就无法启用 BBR。
+ 需要对系统进行升级
+ 更新包索引：先运行
+ sudo apt-get update
+在运行 安装新的内核版本（如果你的当前内核版本较低）：
+sudo apt-get install linux-image-$(uname -r | sed 's/[a-zA-Z]*-[0-9]*-//')-generic
+
+等待更新
+
 
 # 效果预览  
 `面板使用`:  
