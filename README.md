@@ -58,9 +58,8 @@ bash <(curl -L https://raw.githubusercontent.com/z4979511/x-ui/main/install.sh) 
 表明你的服务器内核版本不支持 BBR 加速。BBR 是 Linux 4.9 及以上版本的功能，如果你的内核版本低于 4.9，就无法启用 BBR。
  需要对系统进行升级
 
-一键更新服务器内核
+一键更新服务器内核（用于 Debian 和 Ubuntu 系统）
 sudo apt-get update && sudo apt-get install linux-image-$(uname -r | sed 's/[a-zA-Z]*-[0-9]*-//')-generic
-
 或者按照下面的代码分别输入进行更新
  更新包索引：1.先运行下面代码
  
@@ -71,6 +70,26 @@ sudo apt-get update && sudo apt-get install linux-image-$(uname -r | sed 's/[a-z
 sudo apt-get install linux-image-$(uname -r | sed 's/[a-zA-Z]*-[0-9]*-//')-generic
 
 等待更新
+------------------------------------
+
+一键更新服务器内核（用于CentOS 系统）
+sudo yum update -y && sudo yum install kernel -y && sudo reboot
+
+或者按照下面的代码分别输入进行更新
+ 在 CentOS 上安装内核更新的正确步骤：
+1.运行以下命令来更新系统：
+sudo yum update
+
+2.安装新内核： CentOS 使用 yum 包管理工具，安装内核的命令为：
+sudo yum install kernel
+
+3.重启系统： 安装完成后，重启系统以便使用新内核：
+sudo reboot
+
+4检查当前内核版本： 重启后，你可以使用以下命令来检查当前内核版本：
+uname -r
+
+这样，你就可以在 CentOS 系统上安装并更新内核了
 
 确认 BBR 是否已启用：
 运行命令sysctl net.ipv4.tcp_congestion_control
