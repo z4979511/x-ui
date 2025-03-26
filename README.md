@@ -65,6 +65,15 @@ sudo apt-get install linux-image-$(uname -r | sed 's/[a-zA-Z]*-[0-9]*-//')-gener
 
 等待更新
 
+确认 BBR 是否已启用：
+运行命令
+sysctl net.ipv4.tcp_congestion_control
+
+如果反馈出现是：
+net.ipv4.tcp_congestion_control = bbr
+
+说明开启成功
+
 
 # 效果预览  
 `面板使用`:  
