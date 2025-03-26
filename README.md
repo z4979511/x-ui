@@ -43,22 +43,24 @@ bash <(curl -L https://raw.githubusercontent.com/z4979511/x-ui/main/install.sh)
 ```    
 For English Users,please use the following command to install English supported version:  
 ```
-bash <(curl -L https://raw.githubusercontent.com/z4979511/x-ui/main/install.sh)
+bash <(curl -L https://raw.githubusercontent.com/z4979511/x-ui/main/install_en.sh)
 _en.sh)
 ```
 如需安装指定的版本,可以在上述命令中指定版本号,如指定版本为`0.3.4.4`,安装命令如下：    
 ```
-bash <(curl -L https://raw.githubusercontent.com/z4979511/x-ui/main/install.sh -o install.sh && bash install.sh
-) 0.0.1  
+bash <(curl -L https://raw.githubusercontent.com/z4979511/x-ui/main/install.sh) 0.0.1  
 ```
+
 正在启用 BBR 加速...
+
 (standard_in) 1: syntax error
 您的内核版本不支持 BBR（需要 4.9 及以上），BBR 加速无法启用。
- 表明你的服务器内核版本不支持 BBR 加速。BBR 是 Linux 4.9 及以上版本的功能，如果你的内核版本低于 4.9，就无法启用 BBR。
+表明你的服务器内核版本不支持 BBR 加速。BBR 是 Linux 4.9 及以上版本的功能，如果你的内核版本低于 4.9，就无法启用 BBR。
  需要对系统进行升级
  更新包索引：先运行
  
  sudo apt-get update
+ 
 在运行 安装新的内核版本（如果你的当前内核版本较低）：
 
 sudo apt-get install linux-image-$(uname -r | sed 's/[a-zA-Z]*-[0-9]*-//')-generic
@@ -66,10 +68,11 @@ sudo apt-get install linux-image-$(uname -r | sed 's/[a-zA-Z]*-[0-9]*-//')-gener
 等待更新
 
 确认 BBR 是否已启用：
-运行命令
-sysctl net.ipv4.tcp_congestion_control
+运行命令sysctl net.ipv4.tcp_congestion_control
+
 
 如果反馈出现是：
+
 net.ipv4.tcp_congestion_control = bbr
 
 说明开启成功
