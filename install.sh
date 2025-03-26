@@ -1,16 +1,24 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash 
 
+# 定义颜色
 red='\033[0;31m'
 green='\033[0;32m'
 yellow='\033[0;33m'
 plain='\033[0m'
 
+# 欢迎词和联系方式
+echo -e "${green}欢迎使用尼古拉斯狗蛋的 x-ui 安装脚本！${plain}"
+echo -e "${yellow}感谢您的支持！如有任何问题，欢迎联系我:${plain}"
+echo -e "${green}联系方式: Vx858737833，B站ID:nicholas-goudan，https://space.bilibili.com/16297540${plain}"
+echo -e "${yellow}请使用尼古拉斯狗蛋的正版代码，防止被骗${plain}"
+echo -e "----------------------------------------------"
+
 cur_dir=$(pwd)
 
-# check root
+# 检查是否为root用户
 [[ $EUID -ne 0 ]] && echo -e "${red}错误：${plain} 必须使用root用户运行此脚本！\n" && exit 1
 
-# check os
+# 检查操作系统
 if [[ -f /etc/redhat-release ]]; then
     release="centos"
 elif cat /etc/issue | grep -Eqi "debian"; then
@@ -29,6 +37,7 @@ else
     echo -e "${red}未检测到系统版本，请联系脚本作者！${plain}\n" && exit 1
 fi
 
+# 检查架构
 arch=$(arch)
 
 if [[ $arch == "x86_64" || $arch == "x64" || $arch == "s390x" || $arch == "amd64" ]]; then
@@ -42,35 +51,13 @@ fi
 
 echo "架构: ${arch}"
 
+# 检查是否是 64 位系统
 if [ $(getconf WORD_BIT) != '32' ] && [ $(getconf LONG_BIT) != '64' ]; then
     echo "本软件不支持 32 位系统(x86)，请使用 64 位系统(x86_64)，如果检测有误，请联系作者"
     exit -1
 fi
 
-os_version=""
-
-# os version
-if [[ -f /etc/os-release ]]; then
-    os_version=$(awk -F'[= ."]' '/VERSION_ID/{print $3}' /etc/os-release)
-fi
-if [[ -z "$os_version" && -f /etc/lsb-release ]]; then
-    os_version=$(awk -F'[= ."]+' '/DISTRIB_RELEASE/{print $2}' /etc/lsb-release)
-fi
-
-if [[ x"${release}" == x"centos" ]]; then
-    if [[ ${os_version} -le 6 ]]; then
-        echo -e "${red}请使用 CentOS 7 或更高版本的系统！${plain}\n" && exit 1
-    fi
-elif [[ x"${release}" == x"ubuntu" ]]; then
-    if [[ ${os_version} -lt 16 ]]; then
-        echo -e "${red}请使用 Ubuntu 16 或更高版本的系统！${plain}\n" && exit 1
-    fi
-elif [[ x"${release}" == x"debian" ]]; then
-    if [[ ${os_version} -lt 8 ]]; then
-        echo -e "${red}请使用 Debian 8 或更高版本的系统！${plain}\n" && exit 1
-    fi
-fi
-
+# 安装依赖
 install_base() {
     if [[ x"${release}" == x"centos" ]]; then
         yum install wget curl tar jq -y
@@ -79,43 +66,30 @@ install_base() {
     fi
 }
 
-#This function will be called when user installed x-ui out of sercurity
-config_after_install() {
-    echo -e "${yellow}出于安全考虑，安装/更新完成后需要强制修改端口与账户密码${plain}"
-    read -p "确认是否继续,如选择n则跳过本次端口与账户密码设定[y/n]": config_confirm
-    if [[ x"${config_confirm}" == x"y" || x"${config_confirm}" == x"Y" ]]; then
-        read -p "请设置您的账户名:" config_account
-        echo -e "${yellow}您的账户名将设定为:${config_account}${plain}"
-        read -p "请设置您的账户密码:" config_password
-        echo -e "${yellow}您的账户密码将设定为:${config_password}${plain}"
-        read -p "请设置面板访问端口:" config_port
-        echo -e "${yellow}您的面板访问端口将设定为:${config_port}${plain}"
-        echo -e "${yellow}确认设定,设定中${plain}"
-        /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
-        echo -e "${yellow}账户密码设定完成${plain}"
-        /usr/local/x-ui/x-ui setting -port ${config_port}
-        echo -e "${yellow}面板端口设定完成${plain}"
-    else
-        echo -e "${red}已取消设定...${plain}"
-        if [[ ! -f "/etc/x-ui/x-ui.db" ]]; then
-            local usernameTemp=$(head -c 6 /dev/urandom | base64)
-            local passwordTemp=$(head -c 6 /dev/urandom | base64)
-            local portTemp=$(echo $RANDOM)
-            /usr/local/x-ui/x-ui setting -username ${usernameTemp} -password ${passwordTemp}
-            /usr/local/x-ui/x-ui setting -port ${portTemp}
-            echo -e "检测到您属于全新安装,出于安全考虑已自动为您生成随机用户与端口:"
-            echo -e "###############################################"
-            echo -e "${green}面板登录用户名:${usernameTemp}${plain}"
-            echo -e "${green}面板登录用户密码:${passwordTemp}${plain}"
-            echo -e "${red}面板登录端口:${portTemp}${plain}"
-            echo -e "###############################################"
-            echo -e "${red}如您遗忘了面板登录相关信息,可在安装完成后输入x-ui,输入选项7查看面板登录信息${plain}"
+# 启用 BBR 加速
+enable_bbr() {
+    echo -e "${green}正在启用 BBR 加速...${plain}"
+
+    # 检查内核版本，要求 4.9 及以上
+    kernel_version=$(uname -r | cut -d '-' -f 1)
+    if [[ $(echo "$kernel_version >= 4.9" | bc) -eq 1 ]]; then
+        # 启用 BBR
+        echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+        echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+        sysctl -p
+
+        # 验证 BBR 是否启用
+        if sysctl net.ipv4.tcp_congestion_control | grep -q bbr; then
+            echo -e "${green}BBR 加速已成功启用！${plain}"
         else
-            echo -e "${red}当前属于版本升级,保留之前设置项,登录方式保持不变,可输入x-ui后键入数字7查看面板登录信息${plain}"
+            echo -e "${red}BBR 加速启用失败！${plain}"
         fi
+    else
+        echo -e "${red}您的内核版本不支持 BBR（需要 4.9 及以上），BBR 加速无法启用。${plain}"
     fi
 }
 
+# 安装 x-ui
 install_x-ui() {
     systemctl stop x-ui
     cd /usr/local/
@@ -155,13 +129,8 @@ install_x-ui() {
     wget --no-check-certificate -O /usr/bin/x-ui https://raw.githubusercontent.com/FranzKafkaYu/x-ui/main/x-ui.sh
     chmod +x /usr/local/x-ui/x-ui.sh
     chmod +x /usr/bin/x-ui
+    enable_bbr  # 启用 BBR
     config_after_install
-    #echo -e "如果是全新安装，默认网页端口为 ${green}54321${plain}，用户名和密码默认都是 ${green}admin${plain}"
-    #echo -e "请自行确保此端口没有被其他程序占用，${yellow}并且确保 54321 端口已放行${plain}"
-    #    echo -e "若想将 54321 修改为其它端口，输入 x-ui 命令进行修改，同样也要确保你修改的端口也是放行的"
-    #echo -e ""
-    #echo -e "如果是更新面板，则按你之前的方式访问面板"
-    #echo -e ""
     systemctl daemon-reload
     systemctl enable x-ui
     systemctl start x-ui
@@ -181,7 +150,7 @@ install_x-ui() {
     echo -e "x-ui update       - 更新 x-ui 面板"
     echo -e "x-ui install      - 安装 x-ui 面板"
     echo -e "x-ui uninstall    - 卸载 x-ui 面板"
-    echo -e "x-ui geo          - 更新 geo  数据"
+    echo -e "x-ui geo          - 更新 geo 数据"
     echo -e "----------------------------------------------"
 }
 
