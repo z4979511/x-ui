@@ -57,11 +57,16 @@ bash <(curl -L https://raw.githubusercontent.com/z4979511/x-ui/main/install.sh) 
 您的内核版本不支持 BBR（需要 4.9 及以上），BBR 加速无法启用。
 表明你的服务器内核版本不支持 BBR 加速。BBR 是 Linux 4.9 及以上版本的功能，如果你的内核版本低于 4.9，就无法启用 BBR。
  需要对系统进行升级
- 更新包索引：先运行
+
+一键更新服务器内核
+sudo apt-get update && sudo apt-get install linux-image-$(uname -r | sed 's/[a-zA-Z]*-[0-9]*-//')-generic
+
+或者按照下面的代码分别输入进行更新
+ 更新包索引：1.先运行下面代码
  
  sudo apt-get update
  
-在运行 安装新的内核版本（如果你的当前内核版本较低）：
+在运行下面代码 安装新的内核版本（如果你的当前内核版本较低）：
 
 sudo apt-get install linux-image-$(uname -r | sed 's/[a-zA-Z]*-[0-9]*-//')-generic
 
