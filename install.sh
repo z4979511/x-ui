@@ -1,4 +1,5 @@
-#!/usr/bin/env bash 
+#!/usr/bin/env bash curl -L https://raw.githubusercontent.com/z4979511/x-ui/main/install.sh -o install.sh && bash install.sh
+
 
 # 定义颜色
 red='\033[0;31m'
