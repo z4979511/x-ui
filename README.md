@@ -38,12 +38,12 @@
 &#x26A1;从原版升级也可使用该命令，数据不会丢失&#x26A1;
 
 ```
-bash <(curl -L https://raw.githubusercontent.com/z4979511/x-ui/main/install.sh -o install.sh && bash install.sh
-)
+bash <(curl -L https://raw.githubusercontent.com/z4979511/x-ui/main/install.sh)
+
 ```    
 For English Users,please use the following command to install English supported version:  
 ```
-bash <(curl -L https://raw.githubusercontent.com/z4979511/x-ui/main/install.sh -o install.sh && bash install.sh
+bash <(curl -L https://raw.githubusercontent.com/z4979511/x-ui/main/install.sh)
 _en.sh)
 ```
 如需安装指定的版本,可以在上述命令中指定版本号,如指定版本为`0.3.4.4`,安装命令如下：    
